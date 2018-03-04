@@ -16,8 +16,9 @@ _start:
 	movia 	r10, 	0b00111101 #E
 	stwio	r0, 0(r5)		# Display value off to HEX0
 
-	movia 	r11, x		
-
+	movia 	r11, 5			#execute 4 times, for the 4 display	
+	movia 	r13, 4000000		#delay of 150 cycles?
+	#movia r13, 150
 LOOP:
 
 #	add 	r6, r6, r9		#add r9 (H) to the r6 register.
@@ -35,15 +36,24 @@ LOOP:
 
 	#stwio 	r7, 4(r5)
 	beq		r11, r0, END
+	movia r12, 0	#set the delay counter to 0
+	blt		r12, r13, Delay
 	br		LOOP
 
 
 
 END:
-	br END
+#RESET the h 
+	movia r9, 0b01110110
+	movia r11, 5
+	br LOOP
 
-
-	.end
+Delay:
+	addi r12, r12, 1
+	beq r12, r13, LOOP
+	br Delay
+	
+.end
 
 
 
