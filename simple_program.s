@@ -17,8 +17,8 @@ _start:
 	stwio	r0, 0(r5)		# Display value off to HEX0
 
 	movia 	r11, 5			#execute 4 times, for the 4 display	
-	movia 	r13, 4000000		#delay of 150 cycles?
-	#movia r13, 150
+	movia 	r13, 9000000		#delay of 9 million cycles?
+
 LOOP:
 
 #	add 	r6, r6, r9		#add r9 (H) to the r6 register.
