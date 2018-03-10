@@ -2,7 +2,7 @@
     <architecture>Nios II</architecture>
     <system>
         <sample_system_title>DE10-Lite Computer</sample_system_title>
-        <cable>null</cable>
+        <cable>USB-Blaster [USB-0]</cable>
         <processor>Nios2</processor>
         <reset_processor_during_load>false</reset_processor_during_load>
         <terminal>JTAG_UART</terminal>
