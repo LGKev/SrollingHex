@@ -1,7 +1,9 @@
 	.text
 	.equ 	HEX0,		0xFF200020	#hex0 address base
 	.equ	WAIT_DELAY,			9000000 #I think this might be redundent because wait_dealy is decalred in data.
+	.equ	WAIT_DELAY2,		36000000 # longer because of pattern
 	.equ	LetterArraySize,		20	#currently we only have []hello_ _ _ in the array
+	.equ	threePeat, 	4		#make it repate 3 times, a three peat if you will or a three repeat, threepeat weezyF.
 	.global _start
 _start:
 	movia 	r5, HEX0		# move r5 to be the hex base address.
@@ -11,6 +13,7 @@ _start:
 	stwio	r0, 0(r5)		# Display value off to HEX0
 	movia 	r11, LetterArraySize			#execute 4 times, for the 4 display	
 	movia 	r13, 9000000		#delay of 9 million cycles?
+	#movia 	r14, 4				#USed for the counter for patternC 
 	 	
 
 Hello_Buffs:
@@ -29,7 +32,7 @@ Hello_Buffs:
 #will probably be looping very fast so everything will look lit up.
 #at least 4 of them
 
-	#stwio 	r7, 4(r5)
+
 	beq		r11, r0, SequenceAB
 	movia r12, 0	#set the delay counter to 0
 	blt		r12, r13, Delay_Hello_Buffs
@@ -39,13 +42,14 @@ Hello_Buffs:
 
 SequenceAB:
 #now transition to the ABABAB pattern
-	movia r8, 4 #needs to go to 3 times to zero, so start at 4 and compare at 0 so only 3 cycles, i was off by 1
+	movia r8, threePeat #needs to go to 3 times to zero, so start at 4 and compare at 0 so only 3 cycles, i was off by 1
+	movia r12, WAIT_DELAY2
 A:
 	movia r6, PatternA #load entire pattern into r6.
 	ldwio r9, 0(r6)
 	stwio r9, 0(r5)
 	subi  r8, r8, 1
-	beq	  r8, r0, C #wiill go to C next. TODO
+	beq	  r8, r0, SequenceCBlank #wiill go to C next. TODO
 	movia r12, 0 #r12 is used for the delay
 	br Delay_PatternA #wait
 	
@@ -58,23 +62,25 @@ B:
 
 	br SequenceAB
 
+SequenceCBlank:
+	movia r8, threePeat #reset the counter so it does the pattner C blnk 3 times.
 C:
 	movia r6, PatternC #load entire pattern into r6.
 	ldwio r9, 0(r6)
 	stwio r9, 0(r5)
 	subi  r8, r8, 1
-	beq	  r8, r0, PatternC #wiill go to C next. TODO
+	beq	  r8, r0, Restart #wiill go to blank next. TODO
 	movia r12, 0 #r12 is used for the delay
-	br Delay_PatternA #wait
+	br Delay_PatternC #wait
 	
 Blank:	
 	movia r6, PatternBlank #load entire pattern into r6.
 	ldwio r9, 0(r6)
 	stwio r9, 0(r5)
 	movia r12, 0 #r12 is used for the delay
-	br Delay_PatternB #wait
+	br Delay_PatternBlank #wait
 
-	br SequenceAB
+	br Restart
 
 
 
@@ -92,6 +98,18 @@ Delay_PatternB:
 	addi r12, r12, 1
 	beq r12, r13, A
 	br Delay_PatternB
+
+Delay_PatternC:
+	addi r12, r12, 1
+	beq r12, r13, Blank
+	br Delay_PatternC
+
+Delay_PatternBlank:
+	addi r12, r12, 1
+	beq r12, r13, C
+	br Delay_PatternBlank
+
+
 	
 Restart:
 	#need to  reset everthing.
@@ -113,7 +131,7 @@ PatternA:
 PatternB:
 	.word 0x36363636 #pattern B
 PatternC:
-	.word 0xFEFEFEFE #pattern C all on except dot
+	.word 0x7F7F7F7F #pattern C all on except dot
 PatternBlank:
 	.word 0x00000000 #pattern Blank all off. 
 
